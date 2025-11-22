@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google DevFest Workshop - Chrome DevTools MCP Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1d1d1f;
+            background-color: #ffffff;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            z-index: 1000;
+            padding: 12px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 22px;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: #f5f5f7;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-size: 12px;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 44px;
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.005em;
+        }
+
+        .hero .subtitle {
+            font-size: 28px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero .date {
+            font-size: 21px;
+            opacity: 0.8;
+        }
+
+        /* Content Sections */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            font-size: 48px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 50px;
+            letter-spacing: -0.003em;
+        }
+
+        .section p {
+            font-size: 21px;
+            line-height: 1.47059;
+            color: #1d1d1f;
+            margin-bottom: 20px;
+        }
+
+        /* Page Content */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: #f5f5f7;
+            border-radius: 18px;
+            padding: 40px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 17px;
+            color: #6e6e73;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 22px;
+            background: #0071e3;
+            color: white;
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 17px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #0077ed;
+        }
+
+        /* Footer */
+        footer {
+            background: #f5f5f7;
+            padding: 40px 20px;
+            text-align: center;
+            color: #6e6e73;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero .subtitle {
+                font-size: 21px;
+            }
+
+            .section h2 {
+                font-size: 36px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showPage('home'); return false;">DevFest Workshop</a>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('home'); return false;">首页</a></li>
+                <li><a href="#" onclick="showPage('gdg'); return false;">GDG & DevFest</a></li>
+                <li><a href="#" onclick="showPage('devtools'); return false;">DevTools MCP</a></li>
+                <li><a href="#" onclick="showPage('about'); return false;">关于我</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page-content active">
+        <section class="hero">
+            <h1>Google DevFest Workshop</h1>
+            <p class="subtitle">Chrome DevTools MCP Server</p>
+            <p class="date">探索现代 Web 开发工具的新可能</p>
+        </section>
+
+        <section class="section">
+            <h2>活动概览</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🎯 主题</h3>
+                    <p>深入了解 Chrome DevTools MCP Server 的强大功能</p>
+                </div>
+                <div class="card">
+                    <h3>🔧 实践</h3>
+                    <p>通过实际案例学习如何提升开发效率</p>
+                </div>
+                <div class="card">
+                    <h3>🤝 交流</h3>
+                    <p>与开发者社区分享经验和最佳实践</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>活动亮点</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">
+                本次 Workshop 将带你深入了解 Chrome DevTools MCP Server 的核心概念和实际应用。
+                我们将探索如何通过 MCP (Model Context Protocol) 将 Chrome DevTools 的强大功能
+                集成到你的开发工作流中，提升调试和开发体验。
+            </p>
+        </section>
+    </div>
+
+    <!-- GDG & DevFest Page -->
+    <div id="gdg" class="page-content">
+        <section class="hero" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h1>GDG & DevFest</h1>
+            <p class="subtitle">开发者社区的力量</p>
+        </section>
+
+        <section class="section">
+            <h2>关于 GDG</h2>
+            <p>
+                Google Developer Groups (GDG) 是一个面向开发者的全球性社区组织。
+                我们致力于为开发者提供一个学习、分享和成长的平台。
+            </p>
+            <p>
+                GDG 社区定期举办技术分享会、Workshop 和 Hackathon 等活动，
+                帮助开发者掌握最新的技术趋势和最佳实践。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>关于 DevFest</h2>
+            <p>
+                DevFest 是 GDG 社区一年一度的开发者盛会，汇聚了来自世界各地的开发者、
+                技术专家和创新者。这是一个展示最新技术、分享经验和建立联系的绝佳平台。
+            </p>
+            <p>
+                在 DevFest 中，你可以：
+            </p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>📚 学习</h3>
+                    <p>从行业专家那里学习最新技术</p>
+                </div>
+                <div class="card">
+                    <h3>💡 创新</h3>
+                    <p>探索创新的解决方案和工具</p>
+                </div>
+                <div class="card">
+                    <h3>🌐 连接</h3>
+                    <p>与全球开发者社区建立联系</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- DevTools MCP Page -->
+    <div id="devtools" class="page-content">
+        <section class="hero" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <h1>Chrome DevTools MCP Server</h1>
+            <p class="subtitle">下一代 Web 开发工具</p>
+        </section>
+
+        <section class="section">
+            <h2>什么是 MCP?</h2>
+            <p>
+                Model Context Protocol (MCP) 是一个开放协议，允许 AI 助手和开发工具
+                之间进行安全、标准化的通信。它使得 AI 能够直接与开发环境交互，
+                提供更智能、更高效的开发体验。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Chrome DevTools MCP Server</h2>
+            <p>
+                Chrome DevTools MCP Server 将 Chrome DevTools 的强大功能通过 MCP 协议暴露出来，
+                使得 AI 助手能够：
+            </p>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🔍 页面检查</h3>
+                    <p>自动检查和分析网页内容</p>
+                </div>
+                <div class="card">
+                    <h3>🖼️ 截图功能</h3>
+                    <p>捕获页面或元素的截图</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ 性能分析</h3>
+                    <p>进行性能追踪和优化建议</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 自动化操作</h3>
+                    <p>执行点击、输入等自动化任务</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>核心优势</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">
+                Chrome DevTools MCP Server 为开发者提供了一个全新的方式来与浏览器交互。
+                通过 AI 助手，你可以更快速地调试问题、优化性能，并自动化重复性的开发任务。
+            </p>
+        </section>
+    </div>
+
+    <!-- About Me Page -->
+    <div id="about" class="page-content">
+        <section class="hero" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <h1>关于我</h1>
+            <p class="subtitle">曾莛葳</p>
+        </section>
+
+        <section class="section">
+            <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                <div style="width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 40px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: white;">
+                    曾
+                </div>
+                <h2 style="margin-bottom: 30px;">曾莛葳</h2>
+                <p style="font-size: 24px; margin-bottom: 40px; color: #6e6e73;">
+                    后端开发工程师
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>个人简介</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">
+                我是一名专注于后端开发的工程师，对技术充满热情。
+                在日常工作中，我致力于构建稳定、高效的服务器端解决方案。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>兴趣爱好</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="font-size: 64px; margin-bottom: 20px;">🏸</div>
+                <p style="font-size: 24px; color: #1d1d1f;">
+                    羽毛球冲冲冲！
+                </p>
+                <p style="font-size: 17px; color: #6e6e73; margin-top: 10px;">
+                    热爱运动，享受在球场上挥洒汗水的每一刻
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>联系方式</h2>
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 21px; color: #1d1d1f;">
+                    <strong>ttww97</strong>
+                </p>
+                <a href="#" class="btn" style="margin-top: 30px;">联系我</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Google DevFest Workshop - Chrome DevTools MCP Server</p>
+        <p style="margin-top: 10px;">Made with ❤️ by 曾莛葳</p>
+    </footer>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Show selected page
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
+
